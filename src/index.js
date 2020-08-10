@@ -1,17 +1,49 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+// Our Components
+import { Camera } from "./camera";
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+function App() {
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cardImage, setCardImage] = useState();
+
+  return (
+    <div className="flex overflow-x-hidden overflow-y-scroll p-20">
+      {isCameraOpen && (
+        <Camera
+          onCapture={blob => setCardImage(blob)}
+          onClear={() => setCardImage(undefined)}
+        />
+      )}
+
+      {cardImage && (
+        <div>
+          <h2>Preview</h2>
+          <img src={cardImage && URL.createObjectURL(cardImage)} alt="Webcam preview" />
+        </div>
+      )}
+
+      <footer className="fixed inset-x-0 bottom-0 p-6 flex justify-center align-center bg-gray-200">
+        <button
+          className="mx-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setIsCameraOpen(true)}
+        >
+          Open Camera
+        </button>
+        <button
+          className="mx-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => {
+            setIsCameraOpen(false);
+            setCardImage(undefined);
+          }}
+        >
+          Close Camera
+        </button>
+      </footer>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
